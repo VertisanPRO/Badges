@@ -3,7 +3,7 @@
 ## Upload
 Upload "custom" and the "modules" folder to your NamelessMC Root directory (public_html, html, htdocs)
 
-## Installing Template
+## Installing Module
 Open your NamelessMC dashboard => Modules => Click on "Install" - Edit permissions of the groups if the badges configuration view is not appearing in the sidepanel.
 
 
