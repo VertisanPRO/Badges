@@ -12,38 +12,38 @@
 
 $queries = new Queries();
 $user_id = explode('/', $_REQUEST['route']);
-$user_id = $queries->getWhere('users', array('username', '=', $user_id['2']));
+$user_id = DB::getInstance()->get('users', ['username', '=', $user_id['2']])->results();
 $user_id = $user_id['0']->id;
 
-$user_posts = count($queries->getWhere('topics', array('topic_creator', '=', $user_id)));
+$user_posts = count(DB::getInstance()->get('topics', ['topic_creator', '=', $user_id])->results());
 
-$badges_data = $queries->getWhere('badges_data', array('id', '<>', 0));
+$badges_data = DB::getInstance()->get('badges_data', ['id', '<>', 0])->results();
 
 if (count($badges_data)) {
 	foreach ($badges_data as $value) {
 		if ($user_posts >= $value->require_posts) {
-			$badges_list[] = array(
+			$badges_list[] = [
 				'status' => 1,
 				'name' => $value->name,
 				'require_posts' => $value->require_posts,
 				'bdg_color' => $value->bdg_color,
 				'bdg_icon' => $value->bdg_icon,
 				'bdg_ribbon' => $value->bdg_ribbon
-			);
+            ];
 		} else {
-			$badges_list[] = array(
+			$badges_list[] = [
 				'status' => 0,
 				'name' => $value->name,
 				'require_posts' => $value->require_posts,
 				'bdg_color' => $value->bdg_color,
 				'bdg_icon' => $value->bdg_icon,
 				'bdg_ribbon' => $value->bdg_ribbon
-			);
+            ];
 		}
 	}
-	$smarty->assign(array(
+	$smarty->assign([
 		'BADGES_LIST' => $badges_list,
 		'USER_POSTS' => $user_posts,
 		'POSTS' => $BadgesLanguage->get('general', 'posts'),
-	));
+    ]);
 }

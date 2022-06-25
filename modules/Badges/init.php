@@ -9,24 +9,24 @@
  *  Badges By xGIGABAITx & Mubeen
  */
 
-$INFO_MODULE = array(
+$INFO_MODULE = [
 	'name' => 'Badges',
-	'author' => '<a href="https://tensa.co.ua" target="_blank" rel="nofollow noopener">xGIGABAITx & Mubeen</a>',
-	'module_ver' => '1.0.0',
-	'nml_ver' => '2.0.0-pr10',
-);
+	'author' => '<a href="https://github.com/GIGABAIT-Official" target="_blank" rel="nofollow noopener">VertisanPRO</a>',
+	'module_ver' => '1.2.1',
+	'nml_ver' => '2.0.0-pr13',
+];
 
 $BadgesLanguage = new Language(ROOT_PATH . '/modules/' . $INFO_MODULE['name'] . '/language', LANGUAGE);
 
 $GLOBALS['BadgesLanguage'] = $BadgesLanguage;
 
-if (!isset($profile_tabs)) $profile_tabs = array();
+if (!isset($profile_tabs)) $profile_tabs = [];
 
-$profile_tabs['Badges'] = array(
+$profile_tabs['Badges'] = [
 	'title' => $BadgesLanguage->get('general', 'user_page_title'),
 	'smarty_template' => 'badges/user/profile_tab.tpl',
 	'require' => ROOT_PATH . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . $INFO_MODULE['name'] . DIRECTORY_SEPARATOR . 'profile_tab.php'
-);
+];
 
 require_once(ROOT_PATH . '/modules/' . $INFO_MODULE['name'] . '/module.php');
 

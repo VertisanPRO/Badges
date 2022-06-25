@@ -16,49 +16,45 @@ if ($user->isLoggedIn()) {
 	if ($user->canViewStaffCP) {
 
 		Redirect::to(URL::build('/'));
-		die();
 	}
 	if (!$user->isAdmLoggedIn()) {
 
 		Redirect::to(URL::build('/panel/auth'));
-		die();
 	} else {
 		if (!$user->hasPermission('admincp.badges')) {
 			require_once(ROOT_PATH . '/403.php');
-			die();
 		}
 	}
 } else {
 	// Not logged in
 	Redirect::to(URL::build('/login'));
-	die();
 }
 
-define('PAGE', 'panel');
-define('PARENT_PAGE', 'badges_items');
-define('PANEL_PAGE', 'badges_items');
+const PAGE = 'panel';
+const PARENT_PAGE = 'badges_items';
+const PANEL_PAGE = 'badges_items';
 
 require_once(ROOT_PATH . '/core/templates/backend_init.php');
 
 
-$badges_data = $queries->getWhere('badges_data', array('id', '<>', 0));
+$badges_data = DB::getInstance()->get('badges_data', ['id', '<>', 0])->results();
 if (count($badges_data)) {
 
 	foreach ($badges_data as $bg) {
-		$badges_list[] = array(
+		$badges_list[] = [
 			'edit_link' => URL::build('/panel/badges/new', 'action=edit&id=' . Output::getClean($bg->id)),
 			'delete_link' => URL::build('/panel/badges', 'action=delete&id=' . Output::getClean($bg->id)),
 			'id' => $bg->id,
 			'name' => $bg->name,
 			'require_posts' => $bg->require_posts
-		);
+        ];
 	}
-	$smarty->assign(array(
+	$smarty->assign([
 		'BADGES_LIST' => $badges_list
-	));
+    ]);
 }
 
-$smarty->assign(array(
+$smarty->assign([
 	'SUBMIT' => $language->get('general', 'submit'),
 	'YES' => $language->get('general', 'yes'),
 	'NO' => $language->get('general', 'no'),
@@ -73,7 +69,7 @@ $smarty->assign(array(
 	'BADGES_URL' => $BadgesLanguage->get('general', 'badges_url'),
 	'POSTS' => $BadgesLanguage->get('general', 'posts'),
 	'NEW_BDG_LINK' => URL::build('/panel/badges/new')
-));
+]);
 
 
 $template_file = 'badges/badges.tpl';
@@ -83,44 +79,47 @@ if (!isset($_GET['action'])) {
 
 	// ADD BADGES
 	if (Input::exists()) {
-		$errors = array();
-		if (Token::check(Input::get('token'))) {
+		$errors = [];
+        try {
+            if (Token::check(Input::get('token'))) {
 
-			$validate = new Validate();
-			$validation = $validate->check($_POST, array(
-				'require_posts' => array(
-					'required' => true
-				),
-				'name' => array(
-					'required' => true
-				),
-				'badges_url' => array(
-					'required' => true
-				)
-			));
+                $validation = Validate::check($_POST, [
+                    'require_posts' => [
+                        'required' => true
+                    ],
+                    'name' => [
+                        'required' => true
+                    ],
+                    'badges_url' => [
+                        'required' => true
+                    ]
+                ]);
 
-			if ($validation->passed()) {
-				try {
+                if ($validation->passed()) {
+                    try {
 
-					$queries->create('badges_data', array(
-						'name' => Input::get('name'),
-						'description' => Input::get('description'),
-						'require_posts' => Input::get('require_posts'),
-						'icon' => Input::get('badges_url')
-					));
+                        DB::getInstance()->insert('badges_data', [
+                            'name' => Input::get('name'),
+                            'description' => Input::get('description'),
+                            'require_posts' => Input::get('require_posts'),
+                            'icon' => Input::get('badges_url')
+                        ]);
 
-					Session::flash('staff', $BadgesLanguage->get('general', 'badget_created_successfully'));
-					Redirect::to(URL::build('/panel/badges'));
-				} catch (Exception $e) {
-					$errors[] = $e->getMessage();
-				}
-			} else {
-				$errors[] = $BadgesLanguage->get('general', 'add_errors');
-			}
-		} else {
-			$errors[] = $language->get('general', 'invalid_token');
-		}
-	}
+                        Session::flash('staff', $BadgesLanguage->get('general', 'badge_created_successfully'));
+                        Redirect::to(URL::build('/panel/badges'));
+                    } catch (Exception $e) {
+                        $errors[] = $e->getMessage();
+                    }
+                } else {
+                    $errors[] = $BadgesLanguage->get('general', 'add_errors');
+                }
+            } else {
+                $errors[] = $language->get('general', 'invalid_token');
+            }
+        } catch (Exception $e) {
+            // Error
+        }
+    }
 } else {
 	switch ($_GET['action']) {
 
@@ -128,14 +127,13 @@ if (!isset($_GET['action'])) {
 			if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 				try {
 
-					$queries->delete('badges_data', array('id', '=', $_GET['id']));
+					DB::getInstance()->delete('badges_data', ['id', '=', $_GET['id']]);
 				} catch (Exception $e) {
 					die($e->getMessage());
 				}
 
 				Session::flash('staff');
 				Redirect::to(URL::build('/panel/badges'));
-				die();
 			}
 			break;
 
@@ -143,65 +141,65 @@ if (!isset($_GET['action'])) {
 
 			if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 				Redirect::to(URL::build('/panel/badges'));
-				die();
 			}
-			$edit_badges = $queries->getWhere('badges_data', array('id', '=', $_GET['id']));
+			$edit_badges = DB::getInstance()->get('badges_data', ['id', '=', $_GET['id']])->results();
 			if (!count($edit_badges)) {
 				Redirect::to(URL::build('/panel/badges'));
-				die();
 			}
 
 			$edit_badges = $edit_badges[0];
 
 			if (Input::exists()) {
-				$errors = array();
-				if (Token::check(Input::get('token'))) {
+				$errors = [];
+                try {
+                    if (Token::check(Input::get('token'))) {
 
-					$validate = new Validate();
-					$validation = $validate->check($_POST, array(
-						'require_posts' => array(
-							'required' => true
-						),
-						'name' => array(
-							'required' => true
-						),
-						'badges_url' => array(
-							'required' => true
-						)
-					));
+                        $validation = Validate::check($_POST, [
+                            'require_posts' => [
+                                'required' => true
+                            ],
+                            'name' => [
+                                'required' => true
+                            ],
+                            'badges_url' => [
+                                'required' => true
+                            ]
+                        ]);
 
-					if ($validation->passed()) {
-						try {
+                        if ($validation->passed()) {
+                            try {
 
-							$queries->update('badges_data', $edit_badges->id, array(
-								'name' => Input::get('name'),
-								'description' => Input::get('description'),
-								'require_posts' => Input::get('require_posts'),
-								'icon' => Input::get('badges_url')
-							));
+                                DB::getInstance()->update('badges_data', $edit_badges->id, [
+                                    'name' => Input::get('name'),
+                                    'description' => Input::get('description'),
+                                    'require_posts' => Input::get('require_posts'),
+                                    'icon' => Input::get('badges_url')
+                                ]);
 
 
-							Session::flash('staff', $BadgesLanguage->get('general', 'badget_updated_successfully'));
-							Redirect::to(URL::build('/panel/badges'));
-							die();
-						} catch (Exception $e) {
-							$errors[] = $e->getMessage();
-						}
-					} else {
-						$errors[] = $BadgesLanguage->get('general', 'edit_errors');
-					}
-				} else {
-					$errors[] = $language->get('general', 'invalid_token');
-				}
-			}
+                                Session::flash('staff', $BadgesLanguage->get('general', 'badge_updated_successfully'));
+                                Redirect::to(URL::build('/panel/badges'));
+                            } catch (Exception $e) {
+                                $errors[] = $e->getMessage();
+                            }
+                        } else {
+                            $errors[] = $BadgesLanguage->get('general', 'edit_errors');
+                        }
+                    } else {
+                        $errors[] = $language->get('general', 'invalid_token');
+                    }
+                } catch (Exception $e) {
+                    // Error
+                }
+            }
 
-			$smarty->assign(array(
+			$smarty->assign([
 				'EDIT_NAME' => Output::getClean($edit_badges->name),
 				'EDIT_DESCRIPTION' => Output::getClean($edit_badges->description),
 				'EDIT_REQUIRE_POST' => Output::getClean($edit_badges->require_posts),
-				'EDIT_BADGET_URL' => Output::getClean($edit_badges->icon),
+				'EDIT_BADGE_URL' => Output::getClean($edit_badges->icon),
 				'BACK_LINK' => URL::build('/panel/badges')
-			));
+            ]);
 
 
 			$template_file = 'badges/edit_badges.tpl';
@@ -210,36 +208,33 @@ if (!isset($_GET['action'])) {
 
 		default:
 			Redirect::to(URL::build('/panel/badges'));
-			die();
-			break;
 	}
 }
 
 
 // Load modules + template
-Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets, $template);
-$page_load = microtime(true) - $start;
-define('PAGE_LOAD_TIME', str_replace('{x}', round($page_load, 3), $language->get('general', 'page_loaded_in')));
+Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
+
 $template->onPageLoad();
 
 if (Session::exists('staff'))
 	$success = Session::flash('staff');
 
 if (isset($success))
-	$smarty->assign(array(
+	$smarty->assign([
 		'SUCCESS' => $success,
 		'SUCCESS_TITLE' => $language->get('general', 'success')
-	));
+    ]);
 
 if (isset($errors) && count($errors))
-	$smarty->assign(array(
+	$smarty->assign([
 		'ERRORS' => $errors,
 		'ERRORS_TITLE' => $language->get('general', 'error')
-	));
+    ]);
 
-$smarty->assign(array(
+$smarty->assign([
 	'TOKEN' => Token::get(),
-));
+]);
 
 require(ROOT_PATH . '/core/templates/panel_navbar.php');
 

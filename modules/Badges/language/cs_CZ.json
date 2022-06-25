@@ -1,0 +1,15 @@
+{
+    "general\/add_errors": "Chyba přidávání",
+    "general\/badge_created_successfully": "Odznak úspěšně vytvořen",
+    "general\/badge_updated_successfully": "Odznak úspěšně upraven",
+    "general\/bdg_color": "Barva",
+    "general\/bdg_icon": "Ikony",
+    "general\/bdg_text": "Text",
+    "general\/edit_errors": "Chyba úpravy",
+    "general\/group_permission": "Plný přístup k doplňku Badges",
+    "general\/new_badges": "Nové odznaky",
+    "general\/posts": "Příspěvky:",
+    "general\/require_posts": "Požadovaný počet příspěvků?",
+    "general\/title": "Odznaky",
+    "general\/user_page_title": "Odznaky"
+}

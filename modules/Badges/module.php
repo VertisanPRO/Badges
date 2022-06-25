@@ -12,9 +12,13 @@
 class Badges extends Module
 {
 
-	private $_language, $BadgesLanguage;
+	protected $_language, $BadgesLanguage;
+    /**
+     * @var mixed
+     */
+    private $module_name;
 
-	public function __construct($language, $pages, $INFO_MODULE)
+    public function __construct($language, $pages, $INFO_MODULE)
 	{
 		$this->_language = $language;
 
@@ -42,21 +46,16 @@ class Badges extends Module
 			$charset = 'utf8mb4';
 		}
 		if (!$engine || is_array($engine))
-			$engine = 'InnoDB';
 
-		if (!$charset || is_array($charset))
-			$charset = 'latin1';
+        if (!$charset || is_array($charset))
 
-		// Queries
-		$queries = new Queries();
-
-		try {
-			$queries->createTable("badges_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `require_posts` int(11) NOT NULL, `bdg_color` varchar(255) DEFAULT NULL, `bdg_icon` varchar(255) DEFAULT NULL, `bdg_ribbon` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)", "ENGINE=$engine DEFAULT CHARSET=$charset");
+        try {
+            DB::getInstance()->createTable("badges_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `require_posts` int(11) NOT NULL, `bdg_color` varchar(255) DEFAULT NULL, `bdg_icon` varchar(255) DEFAULT NULL, `bdg_ribbon` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)");
 		} catch (Exception $e) {
 			// Error
 		}
 		try {
-			$queries->createTable("badges_users_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `badges_id` int(11) NOT NULL, PRIMARY KEY (`id`)", "ENGINE=$engine DEFAULT CHARSET=$charset");
+            DB::getInstance()->createTable("badges_users_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `badges_id` int(11) NOT NULL, PRIMARY KEY (`id`)");
 		} catch (Exception $e) {
 			// Error
 		}
@@ -69,20 +68,18 @@ class Badges extends Module
 	public function onEnable()
 	{
 
-		$queries = new Queries();
-
 		try {
 
-			$group = $queries->getWhere('groups', array('id', '=', 2));
+			$group = DB::getInstance()->get('groups', ['id', '=', 2])->results();
 			$group = $group[0];
 
 			$group_permissions = json_decode($group->permissions, TRUE);
 			$group_permissions['admincp.badges'] = 1;
 
 			$group_permissions = json_encode($group_permissions);
-			$queries->update('groups', 2, array('permissions' => $group_permissions));
+            DB::getInstance()->update('groups', 2, ['permissions' => $group_permissions]);
 		} catch (Exception $e) {
-			// Ошибка
+			// Error
 		}
 	}
 
@@ -93,81 +90,79 @@ class Badges extends Module
 	public function onPageLoad($user, $pages, $cache, $smarty, $navs, $widgets, $template)
 	{
 
-		PermissionHandler::registerPermissions($this->module_name, array(
-			'admincp.badges' => $this->BadgesLanguage->get('general', 'group_permision')
-		));
+		PermissionHandler::registerPermissions($this->module_name, [
+			'admincp.badges' => $this->BadgesLanguage->get('general', 'group_permission')
+        ]);
 
 		$icon = '<i class="nav-icon fas fa-ribbon"></i>';
 		$order = 15;
 
 		if (defined('FRONT_END')) {
 
-			$queries = new Queries();
-
-			$badges_data = $queries->getWhere('badges_data', array('id', '<>', 0));
+            $badges_data = DB::getInstance()->get('badges_data', ['id', '<>', 0])->results();
 
 			if (count($badges_data)) {
 
-				$badges_user_data = $queries->getWhere('badges_users_data', array('user_id', '=', $user->data()->id));
+				$badges_user_data = DB::getInstance()->get('badges_users_data', ['user_id', '=', $user->data()->id])->results();
 				foreach ($badges_user_data as $value) {
-					$user_badges_list[$value->badges_id] = array(
+					$user_badges_list[$value->badges_id] = [
 						'user_id' => $value->user_id
-					);
+                    ];
 				}
 
-				$user_posts = count($queries->getWhere('topics', array('topic_creator', '=', $user->data()->id)));
+				$user_posts = count(DB::getInstance()->get('topics', ['topic_creator', '=', $user->data()->id])->results());
 				foreach ($badges_data as $value) {
 
-					$badges_list[$value->id] = array(
+					$badges_list[$value->id] = [
 						'name' => $value->name,
 						'bdg_color' => $value->bdg_color,
 						'bdg_icon' => $value->bdg_icon,
 						'bdg_ribbon' => $value->bdg_ribbon
-					);
+                    ];
 
 					if ($user_posts >= $value->require_posts) {
 						if (isset($user_badges_list[$value->id])) {
 							continue;
 						} else {
-							$queries->create('badges_users_data', array(
+							DB::getInstance()->insert('badges_users_data', [
 								'user_id' => $user->data()->id,
 								'badges_id' => $value->id
-							));
+                            ]);
 						}
 					}
 				}
 
-				$users_data = $queries->getWhere('badges_users_data', array('id', '<>', 0));
+				$users_data = DB::getInstance()->get('badges_users_data', ['id', '<>', 0])->results();
 				foreach ($users_data as $value) {
 					if (isset($badges_list[$value->badges_id])) {
-						$user_data_array[] = array(
+						$user_data_array[] = [
 							'user_id' => $value->user_id,
 							'name' => $badges_list[$value->badges_id]['name'],
 							'bdg_color' => $badges_list[$value->badges_id]['bdg_color'],
 							'bdg_icon' => $badges_list[$value->badges_id]['bdg_icon'],
 							'bdg_ribbon' => $badges_list[$value->badges_id]['bdg_ribbon'],
 
-						);
+                        ];
 					}
 
 					// User count badges
-					$user_data_count[$value->user_id] = array(
-						'count' => count($queries->getWhere('badges_users_data', array('user_id', '=', $value->user_id)))
-					);
-					$smarty->assign(array(
+					$user_data_count[$value->user_id] = [
+						'count' => count(DB::getInstance()->get('badges_users_data', ['user_id', '=', $value->user_id])->results())
+                    ];
+					$smarty->assign([
 						'USER_BDG_COUNT' => $user_data_count
-					));
+                    ]);
 					// User count badges \\
 				}
 
-				$smarty->assign(array(
+				$smarty->assign([
 					'USER_BADGES_LIST' => $user_data_array
-				));
+                ]);
 			}
 
-			$smarty->assign(array(
+			$smarty->assign([
 				'BDG_TITLE' => $this->BadgesLanguage->get('general', 'title')
-			));
+            ]);
 		}
 
 		if (defined('BACK_END')) {
@@ -177,10 +172,15 @@ class Badges extends Module
 
 			if ($user->hasPermission('admincp.badges')) {
 
-				$navs[2]->add('badges_divider', mb_strtoupper($title, 'UTF-8'), 'divider', 'top', null, $order, '');
+				$navs[2]->add('badges_divider', mb_strtoupper($title, 'UTF-8'), 'divider', 'top', null, $order);
 
 				$navs[2]->add('badges_items', $title, URL::build('/panel/badges'), 'top', null, $order + 0.1, $icon);
 			}
 		}
 	}
+
+    public function getDebugInfo(): array
+    {
+        return[];
+    }
 }

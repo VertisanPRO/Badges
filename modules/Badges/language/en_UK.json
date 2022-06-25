@@ -1,0 +1,15 @@
+{
+    "general\/add_errors": "Add error",
+    "general\/badge_created_successfully": "Badge created successfully",
+    "general\/badge_updated_successfully": "Badge updated successfully",
+    "general\/bdg_color": "Color",
+    "general\/bdg_icon": "Awesome Icons",
+    "general\/bdg_text": "Text",
+    "general\/edit_errors": "Editing error",
+    "general\/group_permission": "Full access to the module Badges",
+    "general\/new_badges": "New Badges",
+    "general\/posts": "Posts:",
+    "general\/require_posts": "Required number of posts?",
+    "general\/title": "Badges",
+    "general\/user_page_title": "Badges"
+}
