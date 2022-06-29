@@ -11,12 +11,9 @@
 
 class Badges extends Module
 {
-
-	protected $_language, $BadgesLanguage;
-    /**
-     * @var mixed
-     */
-    private $module_name;
+    protected $_language;
+    protected mixed $BadgesLanguage;
+    private mixed $module_name;
 
     public function __construct($language, $pages, $INFO_MODULE)
 	{
@@ -37,28 +34,8 @@ class Badges extends Module
 
 	public function onInstall()
 	{
-
-		try {
-			$engine = Config::get('mysql/engine');
-			$charset = Config::get('mysql/charset');
-		} catch (Exception $e) {
-			$engine = 'InnoDB';
-			$charset = 'utf8mb4';
-		}
-		if (!$engine || is_array($engine))
-
-        if (!$charset || is_array($charset))
-
-        try {
-            DB::getInstance()->createTable("badges_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `require_posts` int(11) NOT NULL, `bdg_color` varchar(255) DEFAULT NULL, `bdg_icon` varchar(255) DEFAULT NULL, `bdg_ribbon` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)");
-		} catch (Exception $e) {
-			// Error
-		}
-		try {
-            DB::getInstance()->createTable("badges_users_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `badges_id` int(11) NOT NULL, PRIMARY KEY (`id`)");
-		} catch (Exception $e) {
-			// Error
-		}
+        DB::getInstance()->createTable("badges_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `require_posts` int(11) NOT NULL, `bdg_color` varchar(255) DEFAULT NULL, `bdg_icon` varchar(255) DEFAULT NULL, `bdg_ribbon` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)");
+        DB::getInstance()->createTable("badges_users_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `badges_id` int(11) NOT NULL, PRIMARY KEY (`id`)");
 	}
 
 	public function onUninstall()
