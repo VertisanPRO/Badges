@@ -1,4 +1,4 @@
-# Badges Module 1.2.1
+# Badges Module 1.2.3
 
 ## Upload
 Upload "custom" and the "modules" folder to your NamelessMC Root directory (public_html, html, htdocs)
