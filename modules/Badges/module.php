@@ -11,9 +11,9 @@
 
 class Badges extends Module
 {
-    protected $_language;
-    protected mixed $BadgesLanguage;
-    private mixed $module_name;
+    private $_language;
+    private $BadgesLanguage;
+    private $module_name;
 
     public function __construct($language, $pages, $INFO_MODULE)
 	{
@@ -34,8 +34,6 @@ class Badges extends Module
 
 	public function onInstall()
 	{
-        DB::getInstance()->createTable("badges_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `require_posts` int(11) NOT NULL, `bdg_color` varchar(255) DEFAULT NULL, `bdg_icon` varchar(255) DEFAULT NULL, `bdg_ribbon` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)");
-        DB::getInstance()->createTable("badges_users_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `badges_id` int(11) NOT NULL, PRIMARY KEY (`id`)");
 	}
 
 	public function onUninstall()
@@ -46,8 +44,9 @@ class Badges extends Module
 	{
 
 		try {
-
-			$group = DB::getInstance()->get('groups', ['id', '=', 2])->results();
+            DB::getInstance()->createTable("badges_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `require_posts` int(11) NOT NULL, `bdg_color` varchar(255) DEFAULT NULL, `bdg_icon` varchar(255) DEFAULT NULL, `bdg_ribbon` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)");
+            DB::getInstance()->createTable("badges_users_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `badges_id` int(11) NOT NULL, PRIMARY KEY (`id`)");
+            $group = DB::getInstance()->get('groups', ['id', '=', 2])->results();
 			$group = $group[0];
 
 			$group_permissions = json_decode($group->permissions, TRUE);
