@@ -119,13 +119,8 @@
         white-space: nowrap;
     }
 </style>
-<h3 class="ui header" style="display: flex; align-items: center; justify-content: space-between;">
-
-</h3>
-
-
+<h3 class="ui header" style="display: flex; align-items: center; justify-content: space-between;"></h3>
 <div class="main-wrapper">
-
     {foreach from=$BADGES_LIST item=$badges}
         {if $badges.status == 1}
             <div class="bdg"
@@ -137,12 +132,9 @@
         {else}
             <div class="bdg"
                 style="background: linear-gradient(to bottom right, rgb(148, 148, 184) 0%, rgb(148, 148, 184) 100%); color: rgb(148, 148, 184);">
-                >
                 <div class="circle"> {$badges.bdg_icon}</div>
                 <div class="ribbon">{$POSTS} {$USER_POSTS}/{$badges.require_posts}</div>
             </div>
         {/if}
     {/foreach}
-
-
 </div>

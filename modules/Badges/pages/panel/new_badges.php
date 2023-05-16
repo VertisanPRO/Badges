@@ -2,7 +2,7 @@
 /*
  *  Made by Samerton
  *  https://github.com/NamelessMC/Nameless/tree/v2/
- *  NamelessMC version 2.0.0-pr9
+ *  NamelessMC version 2.1.0
  *
  *  License: MIT
  *
@@ -36,7 +36,6 @@ const PANEL_PAGE = 'badges_items';
 
 require_once(ROOT_PATH . '/core/templates/backend_init.php');
 
-
 $smarty->assign([
     'SUBMIT' => $language->get('general', 'submit'),
     'YES' => $language->get('general', 'yes'),
@@ -57,11 +56,7 @@ $smarty->assign([
     'BDG_RIBBON_TITLE' => $BadgesLanguage->get('general', 'bdg_text'),
 ]);
 
-
 if (isset($_GET['action'])) {
-
-    // EDIT BADGES
-
     if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
         Redirect::to(URL::build('/panel/badges'));
     }
@@ -69,9 +64,7 @@ if (isset($_GET['action'])) {
     if (!count($edit_badges)) {
         Redirect::to(URL::build('/panel/badges'));
     }
-
     $edit_badges = $edit_badges[0];
-
     $smarty->assign([
         'EDIT_NAME' => Output::getClean($edit_badges->name),
         'EDIT_REQUIRE_POST' => Output::getClean($edit_badges->require_posts),
@@ -80,13 +73,10 @@ if (isset($_GET['action'])) {
         'SET_EDIT_BDG_ICON' => $edit_badges->bdg_icon,
         'EDIT_BDG_RIBBON' => Output::getClean($edit_badges->bdg_ribbon)
     ]);
-
-
     if (Input::exists()) {
         $errors = [];
         try {
             if (Token::check(Input::get('token'))) {
-
                 $validation = Validate::check($_POST, [
                     'require_posts' => [
                         'required' => true
@@ -95,10 +85,8 @@ if (isset($_GET['action'])) {
                         'required' => true
                     ]
                 ]);
-
                 if ($validation->passed()) {
                     try {
-
                         DB::getInstance()->update('badges_data', $edit_badges->id, [
                             'name' => Input::get('name'),
                             'require_posts' => Input::get('require_posts'),
@@ -106,7 +94,6 @@ if (isset($_GET['action'])) {
                             'bdg_icon' => Input::get('bdg_icon'),
                             'bdg_ribbon' => Input::get('bdg_ribbon')
                         ]);
-
                         Session::flash('staff', $BadgesLanguage->get('general', 'badge_created_successfully'));
                         Redirect::to(URL::build('/panel/badges'));
                     } catch (Exception $e) {
@@ -123,12 +110,10 @@ if (isset($_GET['action'])) {
         }
     }
 } else {
-    // ADD BADGES
     if (Input::exists()) {
         $errors = [];
         try {
             if (Token::check(Input::get('token'))) {
-
                 $validation = Validate::check($_POST, [
                     'require_posts' => [
                         'required' => true
@@ -137,10 +122,8 @@ if (isset($_GET['action'])) {
                         'required' => true
                     ]
                 ]);
-
                 if ($validation->passed()) {
                     try {
-
                         DB::getInstance()->insert('badges_data', [
                             'name' => Input::get('name'),
                             'require_posts' => Input::get('require_posts'),
@@ -148,7 +131,6 @@ if (isset($_GET['action'])) {
                             'bdg_icon' => Input::get('bdg_icon'),
                             'bdg_ribbon' => Input::get('bdg_ribbon')
                         ]);
-
                         Session::flash('staff', $BadgesLanguage->get('general', 'badge_created_successfully'));
                         Redirect::to(URL::build('/panel/badges'));
                     } catch (Exception $e) {
