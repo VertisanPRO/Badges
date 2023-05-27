@@ -32,36 +32,13 @@ class Badges extends Module
         $pages->add($this->module_name, '/panel/badges/new', 'pages/panel/new_badges.php');
     }
 
-    public function onInstall()
-    {
-    }
+    public function onInstall() {}
 
-    public function onUninstall()
-    {
-    }
+    public function onUninstall() {}
 
-    public function onEnable()
-    {
+    public function onEnable() {}
 
-        try {
-            DB::getInstance()->createTable("badges_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `require_posts` int(11) NOT NULL, `bdg_color` varchar(255) DEFAULT NULL, `bdg_icon` varchar(255) DEFAULT NULL, `bdg_ribbon` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)");
-            DB::getInstance()->createTable("badges_users_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `badges_id` int(11) NOT NULL, PRIMARY KEY (`id`)");
-            $group = DB::getInstance()->get('groups', ['id', '=', 2])->results();
-            $group = $group[0];
-
-            $group_permissions = json_decode($group->permissions, TRUE);
-            $group_permissions['admincp.badges'] = 1;
-
-            $group_permissions = json_encode($group_permissions);
-            DB::getInstance()->update('groups', 2, ['permissions' => $group_permissions]);
-        } catch (Exception $e) {
-            // Error
-        }
-    }
-
-    public function onDisable()
-    {
-    }
+    public function onDisable() {}
 
     public function onPageLoad($user, $pages, $cache, $smarty, $navs, $widgets, $template)
     {
