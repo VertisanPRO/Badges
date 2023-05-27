@@ -22,7 +22,9 @@ if ($user->isLoggedIn()) {
         Redirect::to(URL::build('/panel/auth'));
     } else {
         if (!$user->hasPermission('admincp.badges')) {
+        if (!$user->hasPermission('admincp.badges.view')) {
             require_once(ROOT_PATH . '/403.php');
+            exit;
         }
     }
 } else {
@@ -100,7 +102,7 @@ if (!isset($_GET['action'])) {
                         $errors[] = $e->getMessage();
                     }
                 } else {
-                    $errors[] = $BadgesLanguage->get('general', 'add_errors');
+                    $errors[] = $BadgesLanguage->get('general', 'error');
                 }
             } else {
                 $errors[] = $language->get('general', 'invalid_token');

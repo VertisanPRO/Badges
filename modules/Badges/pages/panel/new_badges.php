@@ -100,7 +100,7 @@ if (isset($_GET['action'])) {
                         $errors[] = $e->getMessage();
                     }
                 } else {
-                    $errors[] = $BadgesLanguage->get('general', 'add_errors');
+                    $errors[] = $BadgesLanguage->get('general', 'error');
                 }
             } else {
                 $errors[] = $language->get('general', 'invalid_token');
@@ -137,7 +137,7 @@ if (isset($_GET['action'])) {
                         $errors[] = $e->getMessage();
                     }
                 } else {
-                    $errors[] = $BadgesLanguage->get('general', 'add_errors');
+                    $errors[] = $BadgesLanguage->get('general', 'error');
                 }
             } else {
                 $errors[] = $language->get('general', 'invalid_token');

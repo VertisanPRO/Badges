@@ -1,5 +1,5 @@
 {
-    "general\/add_errors": "Fehler beim hinzufügen",
+    "general\/error": "Abzeichen konnte nicht hinzugefügt werden",
     "general\/badge_created_successfully": "Abzeichen erfolgreich erstellt",
     "general\/badge_updated_successfully": "Abzeichen erfolgreich aktualisiert",
     "general\/bdg_color": "Farbe",
