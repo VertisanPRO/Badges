@@ -44,7 +44,9 @@ class Badges extends Module
     {
 
         PermissionHandler::registerPermissions($this->module_name, [
-            'admincp.badges' => $this->BadgesLanguage->get('general', 'group_permission')
+            'admincp.badges.view' => $this->BadgesLanguage->get('general', 'permission_view'),
+            'admincp.badges.add_edit' => $this->BadgesLanguage->get('general', 'permission_add_edit'),
+            'admincp.badges.delete' => $this->BadgesLanguage->get('general', 'permission_delete')
         ]);
 
         $icon = '<i class="nav-icon fas fa-ribbon"></i>';
@@ -106,7 +108,7 @@ class Badges extends Module
         }
         if (defined('BACK_END')) {
             $title = $this->BadgesLanguage->get('general', 'title');
-            if ($user->hasPermission('admincp.badges')) {
+            if ($user->hasPermission('admincp.badges.view')) {
                 $navs[2]->add('badges_divider', mb_strtoupper($title, 'UTF-8'), 'divider', 'top', null, $order);
                 $navs[2]->add('badges_items', $title, URL::build('/panel/badges'), 'top', null, $order + 0.1, $icon);
             }

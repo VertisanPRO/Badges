@@ -21,8 +21,8 @@ if ($user->isLoggedIn()) {
 
         Redirect::to(URL::build('/panel/auth'));
     } else {
-        if (!$user->hasPermission('admincp.badges')) {
-            require_once(ROOT_PATH . '/403.php');
+        if (!$user->hasPermission('admincp.badges.add_edit')) {
+            Redirect::to(URL::build('/panel/badges'));
         }
     }
 } else {
