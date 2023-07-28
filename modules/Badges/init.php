@@ -16,7 +16,7 @@ if (!isset($profile_tabs))
     $profile_tabs = [];
 
 $profile_tabs['Badges'] = [
-    'title' => $BadgesLanguage->get('general', 'user_page_title'),
+    'title' => $BadgesLanguage->get('general', 'title'),
     'smarty_template' => 'badges/user/profile_tab.tpl',
     'require' => ROOT_PATH . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . 'Badges' . DIRECTORY_SEPARATOR . 'profile_tab.php'
 ];

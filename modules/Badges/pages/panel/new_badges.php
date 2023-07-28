@@ -21,8 +21,8 @@ if ($user->isLoggedIn()) {
 
         Redirect::to(URL::build('/panel/auth'));
     } else {
-        if (!$user->hasPermission('admincp.badges')) {
-            require_once(ROOT_PATH . '/403.php');
+        if (!$user->hasPermission('admincp.badges.add_edit')) {
+            Redirect::to(URL::build('/panel/badges'));
         }
     }
 } else {
@@ -100,7 +100,7 @@ if (isset($_GET['action'])) {
                         $errors[] = $e->getMessage();
                     }
                 } else {
-                    $errors[] = $BadgesLanguage->get('general', 'add_errors');
+                    $errors[] = $BadgesLanguage->get('general', 'error');
                 }
             } else {
                 $errors[] = $language->get('general', 'invalid_token');
@@ -137,7 +137,7 @@ if (isset($_GET['action'])) {
                         $errors[] = $e->getMessage();
                     }
                 } else {
-                    $errors[] = $BadgesLanguage->get('general', 'add_errors');
+                    $errors[] = $BadgesLanguage->get('general', 'error');
                 }
             } else {
                 $errors[] = $language->get('general', 'invalid_token');

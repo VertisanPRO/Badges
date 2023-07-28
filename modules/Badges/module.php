@@ -32,42 +32,21 @@ class Badges extends Module
         $pages->add($this->module_name, '/panel/badges/new', 'pages/panel/new_badges.php');
     }
 
-    public function onInstall()
-    {
-    }
+    public function onInstall() {}
 
-    public function onUninstall()
-    {
-    }
+    public function onUninstall() {}
 
-    public function onEnable()
-    {
+    public function onEnable() {}
 
-        try {
-            DB::getInstance()->createTable("badges_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `require_posts` int(11) NOT NULL, `bdg_color` varchar(255) DEFAULT NULL, `bdg_icon` varchar(255) DEFAULT NULL, `bdg_ribbon` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)");
-            DB::getInstance()->createTable("badges_users_data", "`id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `badges_id` int(11) NOT NULL, PRIMARY KEY (`id`)");
-            $group = DB::getInstance()->get('groups', ['id', '=', 2])->results();
-            $group = $group[0];
-
-            $group_permissions = json_decode($group->permissions, TRUE);
-            $group_permissions['admincp.badges'] = 1;
-
-            $group_permissions = json_encode($group_permissions);
-            DB::getInstance()->update('groups', 2, ['permissions' => $group_permissions]);
-        } catch (Exception $e) {
-            // Error
-        }
-    }
-
-    public function onDisable()
-    {
-    }
+    public function onDisable() {}
 
     public function onPageLoad($user, $pages, $cache, $smarty, $navs, $widgets, $template)
     {
 
         PermissionHandler::registerPermissions($this->module_name, [
-            'admincp.badges' => $this->BadgesLanguage->get('general', 'group_permission')
+            'admincp.badges.view' => $this->BadgesLanguage->get('general', 'permission_view'),
+            'admincp.badges.add_edit' => $this->BadgesLanguage->get('general', 'permission_add_edit'),
+            'admincp.badges.delete' => $this->BadgesLanguage->get('general', 'permission_delete')
         ]);
 
         $icon = '<i class="nav-icon fas fa-ribbon"></i>';
@@ -129,7 +108,7 @@ class Badges extends Module
         }
         if (defined('BACK_END')) {
             $title = $this->BadgesLanguage->get('general', 'title');
-            if ($user->hasPermission('admincp.badges')) {
+            if ($user->hasPermission('admincp.badges.view')) {
                 $navs[2]->add('badges_divider', mb_strtoupper($title, 'UTF-8'), 'divider', 'top', null, $order);
                 $navs[2]->add('badges_items', $title, URL::build('/panel/badges'), 'top', null, $order + 0.1, $icon);
             }

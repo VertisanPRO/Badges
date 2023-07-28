@@ -21,8 +21,9 @@ if ($user->isLoggedIn()) {
 
         Redirect::to(URL::build('/panel/auth'));
     } else {
-        if (!$user->hasPermission('admincp.badges')) {
+        if (!$user->hasPermission('admincp.badges.view')) {
             require_once(ROOT_PATH . '/403.php');
+            exit;
         }
     }
 } else {
@@ -75,6 +76,10 @@ if (!isset($_GET['action'])) {
         $errors = [];
         try {
             if (Token::check(Input::get('token'))) {
+                if (!$user->hasPermission('admincp.badges.add_edit')) {
+                    Redirect::to(URL::build('/panel/badges'));
+                }
+
                 $validation = Validate::check($_POST, [
                     'require_posts' => [
                         'required' => true
@@ -100,7 +105,7 @@ if (!isset($_GET['action'])) {
                         $errors[] = $e->getMessage();
                     }
                 } else {
-                    $errors[] = $BadgesLanguage->get('general', 'add_errors');
+                    $errors[] = $BadgesLanguage->get('general', 'error');
                 }
             } else {
                 $errors[] = $language->get('general', 'invalid_token');
@@ -112,6 +117,10 @@ if (!isset($_GET['action'])) {
 } else {
     switch ($_GET['action']) {
         case 'delete':
+            if (!$user->hasPermission('admincp.badges.delete')) {
+                Redirect::to(URL::build('/panel/badges'));
+            }
+
             if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                 try {
                     DB::getInstance()->delete('badges_data', ['id', '=', $_GET['id']]);
@@ -124,6 +133,10 @@ if (!isset($_GET['action'])) {
             }
             break;
         case 'edit':
+            if (!$user->hasPermission('admincp.badges.add_edit')) {
+                Redirect::to(URL::build('/panel/badges'));
+            }
+
             if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
                 Redirect::to(URL::build('/panel/badges'));
             }
